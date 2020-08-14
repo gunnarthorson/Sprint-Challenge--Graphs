@@ -8,7 +8,6 @@ from ast import literal_eval
 # Load world
 world = World()
 
-
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
@@ -28,6 +27,59 @@ player = Player(world.starting_room)
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 traversal_path = []
+
+class Stack():
+    def __init__(self):
+        self.stack = []
+
+    def push(self, value):
+        self.stack.append(value)
+    
+    def pop(self):
+        if self.size() > 0:
+            return self.stack.pop()
+        else:
+            return None
+    
+    def size(self):
+        return len(self.stack)
+
+def directions(paths):
+    if paths == "s":
+        return "n"
+    elif paths == "n":
+        return "s"
+    elif paths == "w":
+        return "e"
+    elif paths == "e":
+        return "w"
+    else:
+        return None
+
+paths = Stack()
+visited = set()
+
+while len(visited) < len(world.rooms):
+    exits = player.current_room.get_exits()
+    print('Room:', player.current_room)
+    print('exits are', exits)
+    path = []
+    for x in exits:
+        if x is not None and player.current_room.get_room_in_direction(x) not in visited:
+            path.append(x)
+            print(path, '<~ path')
+    visited.add(player.current_room)
+    if len(path) > 0:
+        move = random.randint(0, len(path) - 1) 
+        paths.push(path[move])
+        player.travel(path[move])
+        traversal_path.append(path[move])
+        print('More to see from this direction')
+    else:
+        end = paths.pop()
+        player.travel(directions(end))
+        traversal_path.append(directions(end))
+        print('This is the end my friend')
 
 
 
